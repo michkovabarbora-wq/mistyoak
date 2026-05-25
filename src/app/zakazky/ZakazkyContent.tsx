@@ -35,7 +35,7 @@ export function ZakazkyContent({ zakazky }: { zakazky: Zakazka[] }) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-5">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold text-oak-900">Zakázky</h1>
+        <h1 className="text-xl font-semibold text-oak-900">Zakazky</h1>
         <Link href="/zakazky/nova" className="btn-primary">
           <Plus className="w-4 h-4" />
           Nová
