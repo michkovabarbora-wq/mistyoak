@@ -50,11 +50,14 @@ function matKey(nazev: string): string {
 
 function matNazevKratky(nazevRaw: string): string {
   const parts = nazevRaw.replace(/\\\\_/g, '\\').replace(/\\\\/g, '\\').replace(/\\_/g, '\\').split('\\')
-  for (let i = parts.length - 1; i >= 0; i--) {
+  const last = parts[parts.length - 1]?.trim()
+  if (last && last.length > 2) return last
+  for (let i = parts.length - 2; i >= 0; i--) {
     const p = parts[i].trim()
     if (p && p.length > 3 && !/^\d+mm$/.test(p)) return p
   }
-  return parts[parts.length - 1]?.trim() || nazevRaw
+  return last || nazevRaw
+}
 }
 
 function parseFile(text: string, fileName: string): ParsedResult {
