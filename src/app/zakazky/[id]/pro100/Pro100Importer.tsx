@@ -42,21 +42,19 @@ interface ParsedResult {
   typ: 'naceneni' | 'material' | 'elementy' | 'dilce' | 'neznamy'
 }
 
-// ─── Pomocné funkce (přeneseno z truhlarna ZIP) ────────────────────────────
-
 function matKey(nazev: string): string {
   return nazev.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '')
 }
 
 function matNazevKratky(nazevRaw: string): string {
-  // Odstraň prefix "nacenění #" nebo podobné
   const withoutHash = nazevRaw.replace(/^[^#]*#/, '').trim()
-  // Split podle \ nebo \_
   const parts = withoutHash.split(/\\[_]?/).filter(p => p.trim().length > 0)
   const last = parts[parts.length - 1]?.trim()
   if (last && last.length > 2) return last
   return withoutHash || nazevRaw
-}function parseFile(text: string, fileName: string): ParsedResult {
+}
+
+function parseFile(text: string, fileName: string): ParsedResult {
   const content = text.replace(/^\uFEFF/, '')
   const lines = content.split(/\r?\n/).filter(l => l.trim())
 
@@ -70,7 +68,6 @@ function matNazevKratky(nazevRaw: string): string {
   const kovani: Kovani[] = []
 
   if (isHash) {
-    // === .### formát (nacenění) ===
     const header = lines[0]
     const tlMatch = header.match(/#(\d+)mm/)
     const tl = tlMatch ? parseInt(tlMatch[1]) : 18
@@ -78,7 +75,7 @@ function matNazevKratky(nazevRaw: string): string {
     const hp = header.split('#')
     const nazevParts = hp.map(p => p.trim()).filter(p => p && !/^\d+mm$/.test(p) && p.length > 3)
     const matNazevRaw = nazevParts[nazevParts.length - 1] || 'Materiál'
-const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).pop() || matNazevRaw
+    const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).pop() || matNazevRaw
 
     let m2celkem = 0
     lines.slice(1).forEach(line => {
@@ -101,7 +98,6 @@ const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).p
       dilce.push({ nazev: nazevD || 'Dílec', nazevPlny: nazevD, mat: matNazev, delka: d, sirka: s, tl, hrana: '—', hranaL: '', hranaP: '', pocet: k })
     })
 
-    // Přidej jako materiálovou položku
     const deskW = 2800, deskH = 2080, okraj = 14
     const pouzM2 = (deskW - 2 * okraj) * (deskH - 2 * okraj) / 1e6
     const desek = Math.ceil(m2celkem / pouzM2 * 1.1)
@@ -116,7 +112,6 @@ const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).p
     return { dilce, materialy, kovani, soubor: fileName, typ: 'naceneni' }
 
   } else if (tab3m.length >= 3) {
-    // === Material consumption ===
     const byMat: Record<string, { nazev: string; m2: number; bm: number }> = {}
     lines.forEach(line => {
       const cols = line.split('\t'); if (cols.length !== 3) return
@@ -146,7 +141,6 @@ const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).p
     return { dilce, materialy, kovani, soubor: fileName, typ: 'material' }
 
   } else if (tab2.length >= 3) {
-    // === Element list (kování) ===
     lines.forEach(line => {
       const cols = line.split('\t'); if (cols.length !== 2) return
       const nazev = cols[0].trim(), pocet = parseInt(cols[1]) || 1
@@ -156,7 +150,6 @@ const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).p
     return { dilce, materialy, kovani, soubor: fileName, typ: 'elementy' }
 
   } else if (tab8.length > 3) {
-    // === Piece list (dílce) ===
     const skipMat = ['dětské', 'modrá', 'vibelenii']
     const skipNazev = ['obrzeże', 'poduszka', 'čalounění', 'lamela']
     const byMatPl: Record<string, { nazev: string; m2: number; je3mm: boolean }> = {}
@@ -191,7 +184,6 @@ const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).p
       }
     })
 
-    // Spočítej hrany
     let celkemHranBm = 0
     lines.forEach(line => {
       const cols = line.split('\t'); if (cols.length !== 8) return
@@ -233,6 +225,7 @@ export function Pro100Importer({ zakazkaId }: Props) {
   const [dragOver, setDragOver] = useState(false)
   const [importing, setImporting] = useState(false)
   const [imported, setImported] = useState(false)
+  const [editNazvy, setEditNazvy] = useState<Record<string, string>>({})
 
   const processFiles = useCallback((files: FileList | File[]) => {
     const fileArray = Array.from(files)
@@ -271,7 +264,6 @@ export function Pro100Importer({ zakazkaId }: Props) {
   const handleImport = async () => {
     setImporting(true)
     try {
-      // Uložit materiály
       for (const result of parsedResults) {
         for (const mat of result.materialy) {
           await supabase.from('materialy').insert({
@@ -285,7 +277,6 @@ export function Pro100Importer({ zakazkaId }: Props) {
           })
         }
 
-        // Uložit kování
         for (const kov of result.kovani) {
           await supabase.from('materialy').insert({
             zakazka_id: zakazkaId,
@@ -409,12 +400,48 @@ export function Pro100Importer({ zakazkaId }: Props) {
                   <div className="mb-3">
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Materiál</p>
                     <div className="space-y-1">
-                      {result.materialy.map((m, j) => (
-                        <div key={j} className="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0">
-                          <span className="text-sm text-gray-700">{m.nazev}</span>
-                          <span className="text-sm font-medium text-gray-900">{m.mnozstvi} {m.jednotka}</span>
-                        </div>
-                      ))}
+                      {result.materialy.map((m, j) => {
+                        const key = `${i}-${j}`
+                        const isEditing = editNazvy[key] !== undefined
+                        return (
+                          <div key={j} className="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0 gap-2">
+                            {isEditing ? (
+                              <input
+                                autoFocus
+                                className="text-sm text-gray-700 border border-indigo-300 rounded px-2 py-0.5 flex-1"
+                                value={editNazvy[key]}
+                                onChange={e => setEditNazvy(prev => ({ ...prev, [key]: e.target.value }))}
+                                onBlur={() => {
+                                  m.nazev = editNazvy[key]
+                                  setEditNazvy(prev => { const n = { ...prev }; delete n[key]; return n })
+                                }}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter' || e.key === 'Escape') {
+                                    if (e.key === 'Enter') m.nazev = editNazvy[key]
+                                    setEditNazvy(prev => { const n = { ...prev }; delete n[key]; return n })
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <span
+                                className="text-sm text-gray-700 flex-1 cursor-pointer hover:text-indigo-600"
+                                onClick={() => setEditNazvy(prev => ({ ...prev, [key]: m.nazev }))}
+                                title="Klikni pro editaci"
+                              >
+                                {m.nazev}
+                              </span>
+                            )}
+                            <button
+                              onClick={() => setEditNazvy(prev => ({ ...prev, [key]: m.nazev }))}
+                              className="text-gray-300 hover:text-indigo-500 transition-colors text-xs"
+                              title="Upravit název"
+                            >
+                              ✏️
+                            </button>
+                            <span className="text-sm font-medium text-gray-900 whitespace-nowrap">{m.mnozstvi} {m.jednotka}</span>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 )}
