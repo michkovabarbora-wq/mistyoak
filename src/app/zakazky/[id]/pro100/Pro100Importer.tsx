@@ -49,17 +49,14 @@ function matKey(nazev: string): string {
 }
 
 function matNazevKratky(nazevRaw: string): string {
-const parts = nazevRaw.split('_').filter(p => p.trim().length > 0)
+  // Odstraň prefix "nacenění #" nebo podobné
+  const withoutHash = nazevRaw.replace(/^[^#]*#/, '').trim()
+  // Split podle \ nebo \_
+  const parts = withoutHash.split(/\\[_]?/).filter(p => p.trim().length > 0)
   const last = parts[parts.length - 1]?.trim()
   if (last && last.length > 2) return last
-  for (let i = parts.length - 2; i >= 0; i--) {
-    const p = parts[i].trim()
-    if (p && p.length > 3 && !/^\d+mm$/.test(p)) return p
-  }
-  return last || nazevRaw
-}
-
-function parseFile(text: string, fileName: string): ParsedResult {
+  return withoutHash || nazevRaw
+}function parseFile(text: string, fileName: string): ParsedResult {
   const content = text.replace(/^\uFEFF/, '')
   const lines = content.split(/\r?\n/).filter(l => l.trim())
 
