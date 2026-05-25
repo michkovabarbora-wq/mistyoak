@@ -77,7 +77,8 @@ function matNazevKratky(nazevRaw: string): string {
     const je3mm = tl <= 5
     const hp = header.split('#')
     const nazevParts = hp.map(p => p.trim()).filter(p => p && !/^\d+mm$/.test(p) && p.length > 3)
-    const matNazev = nazevParts[nazevParts.length - 1] || 'Materiál'
+    const matNazevRaw = nazevParts[nazevParts.length - 1] || 'Materiál'
+const matNazev = matNazevRaw.split(/[\\\_]+/).filter(p => p.trim().length > 2).pop() || matNazevRaw
 
     let m2celkem = 0
     lines.slice(1).forEach(line => {
