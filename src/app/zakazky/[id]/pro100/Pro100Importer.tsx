@@ -253,7 +253,7 @@ export function Pro100Importer({ zakazkaId }: Props) {
           setParsedResults(prev => [...prev, ...results])
         }
       }
-      reader.readAsText(file, 'utf-8')
+      reader.readAsText(file, 'windows-1250')
     })
   }, [])
 
