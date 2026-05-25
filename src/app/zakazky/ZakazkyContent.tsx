@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ZakazkaCard } from '@/components/zakázky/ZakazkaCard'
+import { ZakazkaCard } from '@/components/zakazky/ZakazkaCard'
 import { EmptyState } from '@/components/ui'
 import { STAV_LABELS } from '@/lib/utils'
 import type { Zakazka, StavZakazky } from '@/types'
