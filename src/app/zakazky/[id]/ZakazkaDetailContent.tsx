@@ -43,23 +43,20 @@ export function ZakazkaDetailContent({
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-5">
-
-      {/* Back + akce */}
       <div className="flex items-center justify-between mb-4">
-        <Link href="/zakázky" className="btn-ghost">
+        <Link href="/zakazky" className="btn-ghost">
           <ArrowLeft className="w-4 h-4" />
           Zakázky
         </Link>
         <Link href={`/zakazky/${zakazka.id}/pro100`} className="btn-primary">
-          📥 PRO100
+          PRO100
         </Link>
-        <Link href={`/zakázky/${zakazka.id}/upravit`} className="btn-secondary">
+        <Link href={`/zakazky/${zakazka.id}/upravit`} className="btn-secondary">
           <Edit className="w-4 h-4" />
           Upravit
         </Link>
       </div>
 
-      {/* Header karta */}
       <div className="card p-4 mb-4">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
@@ -73,7 +70,6 @@ export function ZakazkaDetailContent({
           <StavBadge stav={zakazka.stav} />
         </div>
 
-        {/* Kontakt */}
         <div className="grid grid-cols-2 gap-2 mb-3">
           {zakazka.zakaznik?.telefon && (
             
@@ -101,7 +97,6 @@ export function ZakazkaDetailContent({
           )}
         </div>
 
-        {/* Progress */}
         <StepRail stav={zakazka.stav} className="mb-2" />
         <div className="flex items-center justify-between">
           <TerminChip termin={zakazka.termin} />
@@ -109,7 +104,6 @@ export function ZakazkaDetailContent({
         </div>
         <ProgressBar value={progress} className="mt-1" />
 
-        {/* Cena rychlý přehled */}
         {zakazka.cena_zakaznik && (
           <div className="mt-3 pt-3 border-t border-birch-100 flex items-center justify-between">
             <span className="text-xs text-mist-500">Cena pro zákazníka</span>
@@ -120,7 +114,6 @@ export function ZakazkaDetailContent({
         )}
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 overflow-x-auto pb-1 mb-4 scrollbar-hide">
         {TABS.map(tab => (
           <button
@@ -139,27 +132,14 @@ export function ZakazkaDetailContent({
         ))}
       </div>
 
-      {/* Tab obsah */}
-      {activeTab === 'prehled' && (
-        <PrehledTab zakazka={zakazka} ukoly={ukoly} />
-      )}
-      {activeTab === 'materialy' && (
-        <MaterialyTab materialy={materialy} zakazkaId={zakazka.id} />
-      )}
-      {activeTab === 'dokumenty' && (
-        <DokumentyTab dokumenty={dokumenty} zakazkaId={zakazka.id} />
-      )}
-      {activeTab === 'kalkulace' && (
-        <KalkulaceTab kalkulace={kalkulace} zakazka={zakazka} />
-      )}
-      {activeTab === 'komunikace' && (
-        <KomunikaceTab komunikace={komunikace} zakazkaId={zakazka.id} />
-      )}
+      {activeTab === 'prehled' && <PrehledTab zakazka={zakazka} ukoly={ukoly} />}
+      {activeTab === 'materialy' && <MaterialyTab materialy={materialy} zakazkaId={zakazka.id} />}
+      {activeTab === 'dokumenty' && <DokumentyTab dokumenty={dokumenty} zakazkaId={zakazka.id} />}
+      {activeTab === 'kalkulace' && <KalkulaceTab zakazka={zakazka} />}
+      {activeTab === 'komunikace' && <KomunikaceTab komunikace={komunikace} zakazkaId={zakazka.id} />}
     </div>
   )
 }
-
-// ─── Tab: Přehled ─────────────────────────────────────────────────────────────
 
 function PrehledTab({ zakazka, ukoly }: { zakazka: Zakazka; ukoly: Ukol[] }) {
   return (
@@ -170,14 +150,12 @@ function PrehledTab({ zakazka, ukoly }: { zakazka: Zakazka; ukoly: Ukol[] }) {
           <p className="font-medium text-oak-800">{FAZE_LABELS[zakazka.faze_vyroby]}</p>
         </div>
       )}
-
       {zakazka.poznamka && (
         <div className="card p-4">
           <p className="section-label">Poznámka</p>
           <p className="text-sm text-oak-800 whitespace-pre-wrap">{zakazka.poznamka}</p>
         </div>
       )}
-
       <div className="card divide-y divide-birch-100">
         <p className="px-4 py-3 section-label">
           Úkoly
@@ -190,15 +168,8 @@ function PrehledTab({ zakazka, ukoly }: { zakazka: Zakazka; ukoly: Ukol[] }) {
         ) : (
           ukoly.map(u => (
             <div key={u.id} className="flex items-center gap-3 px-4 py-2.5">
-              <input
-                type="checkbox"
-                checked={u.splneno}
-                readOnly
-                className="w-4 h-4 accent-oak-500"
-              />
-              <span className={cn('text-sm', u.splneno && 'line-through text-mist-400')}>
-                {u.text}
-              </span>
+              <input type="checkbox" checked={u.splneno} readOnly className="w-4 h-4 accent-oak-500" />
+              <span className={cn('text-sm', u.splneno && 'line-through text-mist-400')}>{u.text}</span>
             </div>
           ))
         )}
@@ -206,8 +177,6 @@ function PrehledTab({ zakazka, ukoly }: { zakazka: Zakazka; ukoly: Ukol[] }) {
     </div>
   )
 }
-
-// ─── Tab: Materiály ───────────────────────────────────────────────────────────
 
 function MaterialyTab({ materialy, zakazkaId }: { materialy: Material[]; zakazkaId: string }) {
   const skupiny = materialy.reduce((acc, m) => {
@@ -217,7 +186,7 @@ function MaterialyTab({ materialy, zakazkaId }: { materialy: Material[]; zakazka
   }, {} as Record<string, Material[]>)
 
   const KATEGORIE_LABELS: Record<string, string> = {
-    korpus: 'Korpus', 'dvírka': 'Dvířka', pracovni_deska: 'Pracovní deska',
+    korpus: 'Korpus', dvírka: 'Dvířka', pracovni_deska: 'Pracovní deska',
     hrany: 'Hrany', kovani: 'Kování', spotrebice: 'Spotřebiče', jine: 'Jiné',
   }
 
@@ -238,10 +207,7 @@ function MaterialyTab({ materialy, zakazkaId }: { materialy: Material[]; zakazka
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <span className="text-xs text-mist-500">{m.pocet} {m.jednotka}</span>
-                <span className={cn(
-                  'badge text-xs',
-                  m.objednano ? 'badge-ok' : 'badge-warn'
-                )}>
+                <span className={cn('badge text-xs', m.objednano ? 'badge-ok' : 'badge-warn')}>
                   {m.objednano ? 'Objednáno' : 'Čeká'}
                 </span>
               </div>
@@ -253,17 +219,15 @@ function MaterialyTab({ materialy, zakazkaId }: { materialy: Material[]; zakazka
   )
 }
 
-// ─── Tab: Dokumenty ───────────────────────────────────────────────────────────
-
 function DokumentyTab({ dokumenty, zakazkaId }: { dokumenty: Dokument[]; zakazkaId: string }) {
-  if (dokumenty.length === 0) {
-    return <p className="text-sm text-mist-400 py-4">Žádné dokumenty zatím nahrány.</p>
-  }
-
   const TYP_LABELS: Record<string, string> = {
     vizualizace: 'Vizualizace', pro100: 'PRO100',
     foto_zamereni: 'Foto zaměření', foto_montaz: 'Foto montáž',
     pdf_navrh: 'PDF návrh', jine: 'Jiné',
+  }
+
+  if (dokumenty.length === 0) {
+    return <p className="text-sm text-mist-400 py-4">Žádné dokumenty zatím nahrány.</p>
   }
 
   return (
@@ -287,21 +251,17 @@ function DokumentyTab({ dokumenty, zakazkaId }: { dokumenty: Dokument[]; zakazka
   )
 }
 
-// ─── Tab: Kalkulace ───────────────────────────────────────────────────────────
-
-function KalkulaceTab({ kalkulace, zakazka }: { kalkulace: Kalkulace | null; zakazka: Zakazka }) {
+function KalkulaceTab({ zakazka }: { zakazka: Zakazka }) {
   return <KalkulaceKomponenta zakazkaId={zakazka.id} />
 }
 
-// ─── Tab: Komunikace ──────────────────────────────────────────────────────────
-
 function KomunikaceTab({ komunikace, zakazkaId }: { komunikace: KomunikaceZaznam[]; zakazkaId: string }) {
-  if (komunikace.length === 0) {
-    return <p className="text-sm text-mist-400 py-4">Zatím žádná komunikace.</p>
-  }
-
   const TYP_ICONS: Record<string, string> = {
     telefon: '📞', email: '✉️', sms: '💬', osobne: '🤝', poznamka: '📝',
+  }
+
+  if (komunikace.length === 0) {
+    return <p className="text-sm text-mist-400 py-4">Zatím žádná komunikace.</p>
   }
 
   return (
