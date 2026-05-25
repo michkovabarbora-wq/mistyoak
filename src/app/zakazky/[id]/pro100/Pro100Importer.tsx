@@ -49,7 +49,8 @@ function matKey(nazev: string): string {
 }
 
 function matNazevKratky(nazevRaw: string): string {
-  const parts = nazevRaw.replace(/\\\\_/g, '\\').replace(/\\\\/g, '\\').replace(/\\_/g, '\\').split('\\')
+  const cleaned = nazevRaw.replace(/\\\\_/g, '\\').replace(/\\\\/g, '\\').replace(/\\_/g, '\\')
+  const parts = cleaned.split('\\')
   const last = parts[parts.length - 1]?.trim()
   if (last && last.length > 2) return last
   for (let i = parts.length - 2; i >= 0; i--) {
@@ -57,7 +58,6 @@ function matNazevKratky(nazevRaw: string): string {
     if (p && p.length > 3 && !/^\d+mm$/.test(p)) return p
   }
   return last || nazevRaw
-}
 }
 
 function parseFile(text: string, fileName: string): ParsedResult {
