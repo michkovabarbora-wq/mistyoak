@@ -49,6 +49,9 @@ export function ZakazkaDetailContent({
           <ArrowLeft className="w-4 h-4" />
           Zakázky
         </Link>
+        <Link href={`/zakazky/${zakazka.id}/pro100`} className="btn-primary">
+  📥 PRO100
+</Link>
         <Link href={`/zakázky/${zakazka.id}/upravit`} className="btn-secondary">
           <Edit className="w-4 h-4" />
           Upravit
