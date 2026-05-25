@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 250 246 240;
+    --foreground: 28 28 24;
+    --card: 255 255 255;
+    --card-foreground: 28 28 24;
+    --border: 210 203 190;
+    --oak: 92 122 78;
+    --oak-dark: 58 82 48;
+    --muted: 232 238 230;
+    --muted-foreground: 107 127 100;
+  }
+
+  * {
+    border-color: rgb(var(--border) / 0.4);
+  }
+
+  body {
+    @apply bg-birch-100 text-oak-900 antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Scrollbar minimalistický */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--border) / 0.5); border-radius: 2px; }
+}
+
+@layer components {
+  /* Karta */
+  .card {
+    @apply bg-white rounded-2xl border border-birch-200 shadow-card;
+  }
+  .card-hover {
+    @apply card transition-shadow hover:shadow-card-hover cursor-pointer;
+  }
+
+  /* Badge / štítek */
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full;
+  }
+  .badge-fire    { @apply badge bg-red-50 text-red-700; }
+  .badge-warn    { @apply badge bg-amber-50 text-amber-700; }
+  .badge-ok      { @apply badge bg-oak-50 text-oak-700; }
+  .badge-blue    { @apply badge bg-blue-50 text-blue-700; }
+  .badge-gray    { @apply badge bg-mist-100 text-mist-500; }
+
+  /* Progress rail – kroky zakázky */
+  .step-rail {
+    @apply flex items-center gap-1 overflow-x-auto;
+    scrollbar-width: none;
+  }
+  .step-rail::-webkit-scrollbar { display: none; }
+
+  /* Sekce nadpis */
+  .section-label {
+    @apply text-xs font-medium text-mist-500 uppercase tracking-widest mb-2;
+  }
+
+  /* Input */
+  .input {
+    @apply w-full px-3 py-2 text-sm bg-white border border-birch-200
+           rounded-xl outline-none transition
+           focus:border-oak-400 focus:ring-2 focus:ring-oak-100;
+  }
+
+  /* Tlačítko primární */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+           bg-oak-500 text-white rounded-xl
+           hover:bg-oak-600 active:bg-oak-700
+           transition-colors;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+           bg-white text-oak-700 border border-birch-200 rounded-xl
+           hover:bg-birch-100 transition-colors;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 text-sm
+           text-mist-500 rounded-lg hover:bg-mist-100 transition-colors;
+  }
+}
