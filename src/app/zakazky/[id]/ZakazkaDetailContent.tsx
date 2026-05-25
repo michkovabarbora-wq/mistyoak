@@ -14,6 +14,7 @@ import {
   ArrowLeft, Phone, Mail, MapPin, Package,
   FileText, MessageSquare, CheckSquare, Calculator, Edit
 } from 'lucide-react'
+import { Kalkulace as KalkulaceKomponenta } from '@/components/Kalkulace'
 
 type Tab = 'prehled' | 'materialy' | 'dokumenty' | 'komunikace' | 'kalkulace'
 
@@ -50,8 +51,8 @@ export function ZakazkaDetailContent({
           Zakázky
         </Link>
         <Link href={`/zakazky/${zakazka.id}/pro100`} className="btn-primary">
-  📥 PRO100
-</Link>
+          📥 PRO100
+        </Link>
         <Link href={`/zakázky/${zakazka.id}/upravit`} className="btn-secondary">
           <Edit className="w-4 h-4" />
           Upravit
@@ -75,7 +76,7 @@ export function ZakazkaDetailContent({
         {/* Kontakt */}
         <div className="grid grid-cols-2 gap-2 mb-3">
           {zakazka.zakaznik?.telefon && (
-            <a
+            
               href={`tel:${zakazka.zakaznik.telefon}`}
               className="flex items-center gap-2 text-sm text-oak-600 hover:text-oak-800 transition-colors"
             >
@@ -84,7 +85,7 @@ export function ZakazkaDetailContent({
             </a>
           )}
           {zakazka.zakaznik?.email && (
-            <a
+            
               href={`mailto:${zakazka.zakaznik.email}`}
               className="flex items-center gap-2 text-sm text-oak-600 hover:text-oak-800 transition-colors truncate"
             >
@@ -268,7 +269,7 @@ function DokumentyTab({ dokumenty, zakazkaId }: { dokumenty: Dokument[]; zakazka
   return (
     <div className="card divide-y divide-birch-100">
       {dokumenty.map(d => (
-        <a
+        
           key={d.id}
           href={d.url}
           target="_blank"
@@ -289,60 +290,7 @@ function DokumentyTab({ dokumenty, zakazkaId }: { dokumenty: Dokument[]; zakazka
 // ─── Tab: Kalkulace ───────────────────────────────────────────────────────────
 
 function KalkulaceTab({ kalkulace, zakazka }: { kalkulace: Kalkulace | null; zakazka: Zakazka }) {
-  if (!kalkulace) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-sm text-mist-500 mb-3">Kalkulace zatím nevytvořena</p>
-        <Link href={`/kalkulace/nová?zakazka=${zakazka.id}`} className="btn-primary">
-          Vytvořit kalkulaci
-        </Link>
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-3">
-      <div className="card p-4">
-        <p className="section-label mb-3">Náklady</p>
-        {(kalkulace.polozky as any[]).map((p: any) => (
-          <div key={p.id} className="flex justify-between py-2 border-b border-birch-100 last:border-0 text-sm">
-            <span className="text-mist-600">{p.nazev}</span>
-            <span className="font-medium">{formatCena(p.castka)}</span>
-          </div>
-        ))}
-        <div className="flex justify-between pt-3 mt-1 font-semibold text-[15px]">
-          <span>Náklady celkem</span>
-          <span>{formatCena(kalkulace.naklady_celkem)}</span>
-        </div>
-      </div>
-
-      <div className="card p-4">
-        <p className="section-label mb-3">Výsledek</p>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-mist-500">Marže ({kalkulace.marze_procent} %)</span>
-            <span>+ {formatCena(kalkulace.cena_bez_dph - kalkulace.naklady_celkem)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-mist-500">Sleva</span>
-            <span className="text-red-600">− {formatCena(kalkulace.sleva)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-mist-500">DPH ({kalkulace.dph_procent} %)</span>
-            <span>+ {formatCena(kalkulace.cena_s_dph - kalkulace.cena_bez_dph)}</span>
-          </div>
-          <div className="flex justify-between pt-2 border-t border-birch-200 font-semibold text-[15px]">
-            <span>Cena pro zákazníka</span>
-            <span className="text-oak-800">{formatCena(kalkulace.cena_s_dph)}</span>
-          </div>
-          <div className="flex justify-between text-oak-600 font-medium">
-            <span>Čistý zisk</span>
-            <span>+ {formatCena(kalkulace.zisk)}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  return <KalkulaceKomponenta zakazkaId={zakazka.id} />
 }
 
 // ─── Tab: Komunikace ──────────────────────────────────────────────────────────
