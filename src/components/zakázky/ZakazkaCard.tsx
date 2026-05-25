@@ -16,7 +16,7 @@ export function ZakazkaCard({ zakazka, className, compact = false }: ZakazkaCard
 
   return (
     <Link
-      href={`/zakázky/${zakazka.id}`}
+      href={`/zakazky/${zakazka.id}`}
       className={cn('card-hover block p-4', className)}
     >
       <div className="flex items-start justify-between gap-3 mb-2">
