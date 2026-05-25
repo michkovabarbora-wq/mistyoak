@@ -50,7 +50,6 @@ function matKey(nazev: string): string {
 
 function matNazevKratky(nazevRaw: string): string {
 const parts = nazevRaw.split(/[\\\/|]/).filter(p => p.trim().length > 0)
-  const parts = cleaned.split('|')
   const last = parts[parts.length - 1]?.trim()
   if (last && last.length > 2) return last
   for (let i = parts.length - 2; i >= 0; i--) {
